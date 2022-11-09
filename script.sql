@@ -86,11 +86,20 @@ CREATE TABLE seance (
     PRIMARY KEY (idSeance)
 );
 
+/* Table tarif */
+DROP TABLE tarif;
+CREATE TABLE tarif (
+    idTarif INT(11) NOT NULL AUTO_INCREMENT,
+    typeTarif VARCHAR(25) NOT NULL,
+    tarif DOUBLE NOT NULL,
+    PRIMARY KEY (idTarif)
+);
+
 /* Table statut */
 DROP TABLE statut;
 CREATE TABLE statut (
     idStatut INT(11) NOT NULL AUTO_INCREMENT,
-    type VARCHAR(25) NOT NULL,
+    typeStatut VARCHAR(25) NOT NULL,
     etat VARCHAR(50) NOT NULL,
     PRIMARY KEY (idStatut)
 );
@@ -115,3 +124,5 @@ INSERT INTO utilisateur (idUtilisateur, email, motdepasse, nomUtilisateur, preno
     (1, "romleb2001@gmail.com", "$2y$13$XrRm0L9w..pDdx6rmsNqtunP0HNrnXHAB3kGeKA1Rv6BLflcKvTuW", "Leblanc", "Romain", 1);
 
 INSERT INTO role (idRole, role) VALUES (1, "utilisateur");
+
+INSERT INTO tarif (idTarif, typeTarif, tarif) VALUES (1, "Plein tarif", 9.20), (2, "Étudiant", 7.6), (3, "Moins de 14 ans", 5.9);
