@@ -15,22 +15,27 @@ CREATE TABLE film (
         PRIMARY KEY(idFilm)
 );
 
+/* Table etablissement */
+DROP TABLE etablissement;
+CREATE TABLE etablissement (
+    idEtablissement INT AUTO_INCREMENT NOT NULL,
+    nomEtablissement VARCHAR(50) NOT NULL,
+    adresse VARCHAR(50),
+    codePostal INT(5),
+    ville VARCHAR(50)
+);
+
 /* Table reservation */
 DROP TABLE reservation;
 CREATE TABLE reservation (
     idReservation INT AUTO_INCREMENT NOT NULL,
     idUtilisateur INT NOT NULL,
-    idFilm INT NOT NULL,
     idSeance INT NOT NULL,
     idSalle INT NOT NULL,
-    idStatut INT NOT NULL,
     numBillet VARCHAR(50) NOT NULL,
     dateReservation DATE NOT NULL,
-    INDEX idx_reservation_idutilisateur (idUtilisateur),
-    INDEX idx_reservation_idfilm (idFilm),
-    INDEX idx_reservation_idseance (idSeance),
-    INDEX idx_reservation_idsalle (idSalle),
-    INDEX idx_reservation_idstatut (idStatut),
+    idTarif INT NOT NULL,
+    idStatut INT NOT NULL,
     PRIMARY KEY(idReservation)
 );
 
