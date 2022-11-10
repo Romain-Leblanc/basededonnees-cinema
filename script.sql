@@ -3,7 +3,7 @@ DROP SCHEMA IF EXISTS cinema;
 CREATE SCHEMA cinema;
 
 /* Table film */
-DROP TABLE cinema.film;
+DROP TABLE IF EXISTS cinema.film;
 CREATE TABLE cinema.film (
     idFilm INT NOT NULL PRIMARY KEY AUTO_INCREMENT,
     nomFilm VARCHAR(50) NOT NULL,
@@ -21,7 +21,7 @@ CREATE TABLE cinema.film (
 CREATE INDEX index_film_idstatut ON cinema.film (idStatut);
 
 /* Table etablissement */
-DROP TABLE cinema.etablissement;
+DROP TABLE IF EXISTS cinema.etablissement;
 CREATE TABLE cinema.etablissement (
     idEtablissement INT NOT NULL PRIMARY KEY AUTO_INCREMENT,
     nomEtablissement VARCHAR(50) NOT NULL,
@@ -31,12 +31,11 @@ CREATE TABLE cinema.etablissement (
 );
 
 /* Table reservation */
-DROP TABLE cinema.reservation;
+DROP TABLE IF EXISTS cinema.reservation;
 CREATE TABLE cinema.reservation (
     idReservation INT NOT NULL PRIMARY KEY AUTO_INCREMENT,
     idUtilisateur INT NOT NULL,
     idSeance INT NOT NULL,
-    numBillet VARCHAR(50) NOT NULL,
     dateReservation DATE NOT NULL,
     idTarif INT NOT NULL,
     idPaiement INT NOT NULL,
@@ -45,7 +44,7 @@ CREATE TABLE cinema.reservation (
     FOREIGN KEY (idSeance) REFERENCES cinema.seance (idSeance),
     FOREIGN KEY (idTarif) REFERENCES cinema.tarif (idTarif),
     FOREIGN KEY (idPaiement) REFERENCES cinema.paiement (idPaiement),
-    FOREIGN KEY (idStatut) REFERENCES cinema.statut (idStatut),
+    FOREIGN KEY (idStatut) REFERENCES cinema.statut (idStatut)
 );
 CREATE INDEX index_reservation_idutilisateur ON cinema.reservation (idUtilisateur);
 CREATE INDEX index_reservation_idseance ON cinema.reservation (idSeance);
@@ -54,14 +53,14 @@ CREATE INDEX index_reservation_idpaiement ON cinema.reservation (idPaiement);
 CREATE INDEX index_reservation_idstatut ON cinema.reservation (idStatut);
 
 /* Table role_utilisateur */
-DROP TABLE cinema.role_utilisateur;
+DROP TABLE IF EXISTS cinema.role_utilisateur;
 CREATE TABLE cinema.role_utilisateur (
     idRole INT NOT NULL PRIMARY KEY AUTO_INCREMENT,
     typeRole VARCHAR(25) NOT NULL
 );
 
 /* Table paiement */
-DROP TABLE cinema.paiement;
+DROP TABLE IF EXISTS cinema.paiement;
 CREATE TABLE cinema.paiement (
     idPaiement INT NOT NULL PRIMARY KEY AUTO_INCREMENT,
     typePaiement VARCHAR(25) NOT NULL,
@@ -69,7 +68,7 @@ CREATE TABLE cinema.paiement (
 );
 
 /* Table utilisateur */
-DROP TABLE cinema.utilisateur;
+DROP TABLE IF EXISTS cinema.utilisateur;
 CREATE TABLE cinema.utilisateur (
     idUtilisateur INT NOT NULL PRIMARY KEY AUTO_INCREMENT,
     email VARCHAR(50) NOT NULL,
@@ -77,20 +76,20 @@ CREATE TABLE cinema.utilisateur (
     nomUtilisateur VARCHAR(50) NOT NULL,
     prenomUtilisateur VARCHAR(50) NOT NULL,
     idRole INT NOT NULL,
-    FOREIGN KEY (idRole) REFERENCES cinema.role_utilisateur (idRole),
+    FOREIGN KEY (idRole) REFERENCES cinema.role_utilisateur (idRole)
 );
 CREATE INDEX index_utilisateur_idrole ON cinema.utilisateur (idRole);
 
 /* Table salle */
-DROP TABLE cinema.salle;
+DROP TABLE IF EXISTS cinema.salle;
 CREATE TABLE cinema.salle (
     idSalle INT(11) NOT NULL PRIMARY KEY AUTO_INCREMENT,
     numSalle VARCHAR(50) NOT NULL,
-    nbPlaceSalle INT(11) NOT NULL
+    nombrePlaceSalle INT(11) NOT NULL
 );
 
 /* Table seance */
-DROP TABLE cinema.seance;
+DROP TABLE IF EXISTS cinema.seance;
 CREATE TABLE cinema.seance (
     idSeance INT(11) NOT NULL PRIMARY KEY AUTO_INCREMENT,
     idEtablissement INT NOT NULL,
@@ -107,7 +106,7 @@ CREATE INDEX index_seance_idsalle ON cinema.seance (idSalle);
 CREATE INDEX index_seance_idfilm ON cinema.seance (idFilm);
 
 /* Table tarif */
-DROP TABLE cinema.tarif;
+DROP TABLE IF EXISTS cinema.tarif;
 CREATE TABLE cinema.tarif (
     idTarif INT(11) NOT NULL PRIMARY KEY AUTO_INCREMENT,
     typeTarif VARCHAR(25) NOT NULL,
@@ -115,16 +114,16 @@ CREATE TABLE cinema.tarif (
 );
 
 /* Table statut */
-DROP TABLE cinema.statut;
+DROP TABLE IF EXISTS cinema.statut;
 CREATE TABLE cinema.statut (
     idStatut INT(11) NOT NULL PRIMARY KEY AUTO_INCREMENT,
     typeStatut VARCHAR(25) NOT NULL,
-    etat VARCHAR(50) NOT NULL
+    statut VARCHAR(50) NOT NULL
 );
 
 -- Insertions des données
 
-INSERT INTO film (idFilm, nomFilm, dateSortie, realisateurFilm, dureeFilm, nationaliteFilm, genreFilm, synopsisFilm, noteFilm, imageFilm, idStatut)
+INSERT INTO cinema.film (idFilm, nomFilm, dateSortie, realisateurFilm, dureeFilm, nationaliteFilm, genreFilm, synopsisFilm, noteFilm, imageFilm, idStatut)
 VALUES
     (1, "Mourir peut attendre", "2021-04-02", "Cary Joji Fukunaga", "02:43:10", "Etats-Unis", "Action", "James Bond n'est plus en service et profite d'une vie tranquille en Jamaïque. Mais son répit est de courte durée car l'agent de la CIA Felix Leiter fait son retour pour lui demander son aide. Sa mission, qui est de secourir un scientifique kidnappé, va se révéler plus traître que prévu, et mener 007 sur la piste d'un méchant possédant une nouvelle technologie particulièrement dangereuse.", "0", "MourirPeutAttendre.jpg", 2),
     (2, "Fast & Furious 9", "2021-03-31", "Justin Lin", "03:08:00", "Etats-Unis", "Action", "Après avoir récupéré son fils des mains de Cipher, Dom vit des jours heureux avec le petit Brian et Letty. Cette paisible existence est vite bouleversée quand il doit faire face à un nouvel adversaire, Jakob, qui n'est autre que son petit frère", "0", "FF9.jpg", 2),
@@ -136,22 +135,22 @@ VALUES
     (8, "Intouchables", "2011-11-02", "Olivier Nakache / Éric Toledano", "01:53:00", "France", "Comédie", "Tout les oppose et il était peu probable qu'ils se rencontrent un jour, et pourtant. Philippe, un riche aristocrate devenu tétraplégique après un accident de parapente va engager Driss, un jeune homme d'origine sénégalaise tout droit sorti de prison, comme auxiliaire de vie à domicile. Pourquoi lui ? Tout simplement parce qu'il ne regarde pas Philippe avec le même regard de pitié que les autres candidats.", "4.5", "Intouchables.jpg", 2),
     (9, "American Nightmare 5 : Sans limites", "2021-08-04", "Everardo Gout", "01:44:00", "Etats-Unis", "Horreur", "Adela et son mari Juan habitent au Texas, où Juan travaille dans le ranch de la très aisée famille Tucker. Juan gagne l'estime du patriarche Caleb Tucker, ce qui déclenche la jalousie de Dylan, son fils. La matinée suivant le déchainement nocturne de violence annuelle, un groupe masqué attaque la famille Tucker, dont la femme de Dylan, et sa soeur, forçant les deux familles à s'unir et organiser une riposte alors que le pays entier sombre dans la spirale du chaos et que les États-Unis se désagrègent petit à petit autour d'eux.", "3", "AmericanNightmare5.jpg", 2);
 
-INSERT INTO statut (idStatut, typeStatut, etat) VALUES
+INSERT INTO cinema.statut (idStatut, typeStatut, statut) VALUES
     (1, "film", "Non disponible"),
     (2, "film", "A l'affiche"),
     (3, "billet", "Non utilisé"),
     (4, "billet", "Utilisé");
 
-INSERT INTO paiement (idPaiement, typePaiement, moyenPaiement) VALUES
+INSERT INTO cinema.paiement (idPaiement, typePaiement, moyenPaiement) VALUES
     (1, "En ligne", "Carte bancaire"),
     (2, "Sur place", "Espèce");
 
-INSERT INTO utilisateur (idUtilisateur, email, motdepasse, nomUtilisateur, prenomUtilisateur, idRole) VALUES
+INSERT INTO cinema.utilisateur (idUtilisateur, email, motdepasse, nomUtilisateur, prenomUtilisateur, idRole) VALUES
     (1, "romleb2001@gmail.com", "$2y$13$XrRm0L9w..pDdx6rmsNqtunP0HNrnXHAB3kGeKA1Rv6BLflcKvTuW", "Leblanc", "Romain", 1);
 
-INSERT INTO role_utilisateur (idRole, typeRole) VALUES (1, "utilisateur"), (2, "administrateur");
+INSERT INTO cinema.role_utilisateur (idRole, typeRole) VALUES (1, "utilisateur"), (2, "administrateur");
 
-INSERT INTO tarif (idTarif, typeTarif, tarif) VALUES
+INSERT INTO cinema.tarif (idTarif, typeTarif, tarif) VALUES
     (1, "Plein tarif", 9.20),
     (2, "Étudiant", 7.6),
     (3, "Moins de 14 ans", 5.9);
