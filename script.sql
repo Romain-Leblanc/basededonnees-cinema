@@ -1,7 +1,11 @@
+/* BDD cinema */
+DROP SCHEMA IF EXISTS cinema;
+CREATE SCHEMA cinema;
+
 /* Table film */
-DROP TABLE film;
-CREATE TABLE film (
-    idFilm INT AUTO_INCREMENT NOT NULL,
+DROP TABLE cinema.film;
+CREATE TABLE cinema.film (
+    idFilm INT NOT NULL PRIMARY KEY AUTO_INCREMENT,
     nomFilm VARCHAR(50) NOT NULL,
     dateSortie DATE NOT NULL,
     realisateurFilm VARCHAR(100) NOT NULL,
@@ -12,24 +16,24 @@ CREATE TABLE film (
     noteFilm DOUBLE NOT NULL,
     imageFilm VARCHAR(250) NOT NULL,
     idStatut INT(11) NOT NULL,
-    PRIMARY KEY(idFilm)
+    FOREIGN KEY (idStatut) REFERENCES cinema.statut (idStatut)
 );
+CREATE INDEX index_film_idstatut ON cinema.film (idStatut);
 
 /* Table etablissement */
-DROP TABLE etablissement;
-CREATE TABLE etablissement (
-    idEtablissement INT AUTO_INCREMENT NOT NULL,
+DROP TABLE cinema.etablissement;
+CREATE TABLE cinema.etablissement (
+    idEtablissement INT NOT NULL PRIMARY KEY AUTO_INCREMENT,
     nomEtablissement VARCHAR(50) NOT NULL,
     adresse VARCHAR(50) NOT NULL,
     codePostal INT(5) NOT NULL,
     ville VARCHAR(50) NOT NULL
-    PRIMARY KEY(idEtablissement),
 );
 
 /* Table reservation */
-DROP TABLE reservation;
-CREATE TABLE reservation (
-    idReservation INT AUTO_INCREMENT NOT NULL,
+DROP TABLE cinema.reservation;
+CREATE TABLE cinema.reservation (
+    idReservation INT NOT NULL PRIMARY KEY AUTO_INCREMENT,
     idUtilisateur INT NOT NULL,
     idSeance INT NOT NULL,
     numBillet VARCHAR(50) NOT NULL,
@@ -37,75 +41,85 @@ CREATE TABLE reservation (
     idTarif INT NOT NULL,
     idPaiement INT NOT NULL,
     idStatut INT NOT NULL,
-    PRIMARY KEY(idReservation)
+    FOREIGN KEY (idUtilisateur) REFERENCES cinema.utilisateur (idUtilisateur),
+    FOREIGN KEY (idSeance) REFERENCES cinema.seance (idSeance),
+    FOREIGN KEY (idTarif) REFERENCES cinema.tarif (idTarif),
+    FOREIGN KEY (idPaiement) REFERENCES cinema.paiement (idPaiement),
+    FOREIGN KEY (idStatut) REFERENCES cinema.statut (idStatut),
 );
+CREATE INDEX index_reservation_idutilisateur ON cinema.reservation (idUtilisateur);
+CREATE INDEX index_reservation_idseance ON cinema.reservation (idSeance);
+CREATE INDEX index_reservation_idtarif ON cinema.reservation (idTarif);
+CREATE INDEX index_reservation_idpaiement ON cinema.reservation (idPaiement);
+CREATE INDEX index_reservation_idstatut ON cinema.reservation (idStatut);
 
 /* Table role_utilisateur */
-DROP TABLE role_utilisateur;
-CREATE TABLE role_utilisateur (
-    idRole INT AUTO_INCREMENT NOT NULL,
-    typeRole VARCHAR(25) NOT NULL,
-    PRIMARY KEY (idRole)
+DROP TABLE cinema.role_utilisateur;
+CREATE TABLE cinema.role_utilisateur (
+    idRole INT NOT NULL PRIMARY KEY AUTO_INCREMENT,
+    typeRole VARCHAR(25) NOT NULL
 );
 
 /* Table paiement */
-DROP TABLE paiement;
-CREATE TABLE paiement (
-    idPaiement INT AUTO_INCREMENT NOT NULL,
+DROP TABLE cinema.paiement;
+CREATE TABLE cinema.paiement (
+    idPaiement INT NOT NULL PRIMARY KEY AUTO_INCREMENT,
     typePaiement VARCHAR(25) NOT NULL,
-    PRIMARY KEY (idPaiement)
+    moyenPaiement VARCHAR(25) NOT NULL
 );
 
 /* Table utilisateur */
-DROP TABLE utilisateur;
-CREATE TABLE utilisateur (
-    idUtilisateur INT AUTO_INCREMENT NOT NULL,
+DROP TABLE cinema.utilisateur;
+CREATE TABLE cinema.utilisateur (
+    idUtilisateur INT NOT NULL PRIMARY KEY AUTO_INCREMENT,
     email VARCHAR(50) NOT NULL,
     motdepasse VARCHAR(255) NOT NULL,
     nomUtilisateur VARCHAR(50) NOT NULL,
     prenomUtilisateur VARCHAR(50) NOT NULL,
     idRole INT NOT NULL,
-    PRIMARY KEY (idUtilisateur)
+    FOREIGN KEY (idRole) REFERENCES cinema.role_utilisateur (idRole),
 );
+CREATE INDEX index_utilisateur_idrole ON cinema.utilisateur (idRole);
 
 /* Table salle */
-DROP TABLE salle;
-CREATE TABLE salle (
-    idSalle INT(11) NOT NULL AUTO_INCREMENT,
-    idFilm INT(11) NOT NULL,
+DROP TABLE cinema.salle;
+CREATE TABLE cinema.salle (
+    idSalle INT(11) NOT NULL PRIMARY KEY AUTO_INCREMENT,
     numSalle VARCHAR(50) NOT NULL,
-    nbPlaceSalle INT(11) NOT NULL,
-    PRIMARY KEY (idSalle)
+    nbPlaceSalle INT(11) NOT NULL
 );
 
 /* Table seance */
-DROP TABLE seance;
-CREATE TABLE seance (
-    idSeance INT(11) NOT NULL AUTO_INCREMENT,
+DROP TABLE cinema.seance;
+CREATE TABLE cinema.seance (
+    idSeance INT(11) NOT NULL PRIMARY KEY AUTO_INCREMENT,
     idEtablissement INT NOT NULL,
     idSalle INT NOT NULL,
     idFilm INT(11) NOT NULL,
     dateSeance DATE NOT NULL,
-    heureSeance time NOT NULL,
-    PRIMARY KEY (idSeance)
+    heureSeance TIME NOT NULL,
+    FOREIGN KEY (idEtablissement) REFERENCES cinema.etablissement (idEtablissement),
+    FOREIGN KEY (idSalle) REFERENCES cinema.salle (idSalle),
+    FOREIGN KEY (idFilm) REFERENCES cinema.film (idFilm)
 );
+CREATE INDEX index_seance_idetablissement ON cinema.seance (idEtablissement);
+CREATE INDEX index_seance_idsalle ON cinema.seance (idSalle);
+CREATE INDEX index_seance_idfilm ON cinema.seance (idFilm);
 
 /* Table tarif */
-DROP TABLE tarif;
-CREATE TABLE tarif (
-    idTarif INT(11) NOT NULL AUTO_INCREMENT,
+DROP TABLE cinema.tarif;
+CREATE TABLE cinema.tarif (
+    idTarif INT(11) NOT NULL PRIMARY KEY AUTO_INCREMENT,
     typeTarif VARCHAR(25) NOT NULL,
-    tarif DOUBLE NOT NULL,
-    PRIMARY KEY (idTarif)
+    tarif DOUBLE NOT NULL
 );
 
 /* Table statut */
-DROP TABLE statut;
-CREATE TABLE statut (
-    idStatut INT(11) NOT NULL AUTO_INCREMENT,
+DROP TABLE cinema.statut;
+CREATE TABLE cinema.statut (
+    idStatut INT(11) NOT NULL PRIMARY KEY AUTO_INCREMENT,
     typeStatut VARCHAR(25) NOT NULL,
-    etat VARCHAR(50) NOT NULL,
-    PRIMARY KEY (idStatut)
+    etat VARCHAR(50) NOT NULL
 );
 
 -- Insertions des données
@@ -128,13 +142,16 @@ INSERT INTO statut (idStatut, typeStatut, etat) VALUES
     (3, "billet", "Non utilisé"),
     (4, "billet", "Utilisé");
 
-INSERT INTO paiement (idPaiement, typePaiement) VALUES
-    (1, "En ligne"),
-    (2, "Sur place");
+INSERT INTO paiement (idPaiement, typePaiement, moyenPaiement) VALUES
+    (1, "En ligne", "Carte bancaire"),
+    (2, "Sur place", "Espèce");
 
 INSERT INTO utilisateur (idUtilisateur, email, motdepasse, nomUtilisateur, prenomUtilisateur, idRole) VALUES
     (1, "romleb2001@gmail.com", "$2y$13$XrRm0L9w..pDdx6rmsNqtunP0HNrnXHAB3kGeKA1Rv6BLflcKvTuW", "Leblanc", "Romain", 1);
 
 INSERT INTO role_utilisateur (idRole, typeRole) VALUES (1, "utilisateur"), (2, "administrateur");
 
-INSERT INTO tarif (idTarif, typeTarif, tarif) VALUES (1, "Plein tarif", 9.20), (2, "Étudiant", 7.6), (3, "Moins de 14 ans", 5.9);
+INSERT INTO tarif (idTarif, typeTarif, tarif) VALUES
+    (1, "Plein tarif", 9.20),
+    (2, "Étudiant", 7.6),
+    (3, "Moins de 14 ans", 5.9);
