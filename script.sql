@@ -1,18 +1,18 @@
 /* Table film */
 DROP TABLE film;
 CREATE TABLE film (
-        idFilm INT AUTO_INCREMENT NOT NULL,
-        nomFilm VARCHAR(50) NOT NULL,
-        dateSortie DATE NOT NULL,
-        realisateurFilm VARCHAR(100) NOT NULL,
-        dureeFilm TIME NOT NULL,
-        nationaliteFilm VARCHAR(25) NOT NULL,
-        genreFilm VARCHAR(25) NOT NULL,
-        synopsisFilm LONGTEXT NOT NULL,
-        noteFilm DOUBLE NOT NULL,
-        imageFilm VARCHAR(250) NOT NULL,
-        idStatut INT(11) NOT NULL,
-        PRIMARY KEY(idFilm)
+    idFilm INT AUTO_INCREMENT NOT NULL,
+    nomFilm VARCHAR(50) NOT NULL,
+    dateSortie DATE NOT NULL,
+    realisateurFilm VARCHAR(100) NOT NULL,
+    dureeFilm TIME NOT NULL,
+    nationaliteFilm VARCHAR(25) NOT NULL,
+    genreFilm VARCHAR(25) NOT NULL,
+    synopsisFilm LONGTEXT NOT NULL,
+    noteFilm DOUBLE NOT NULL,
+    imageFilm VARCHAR(250) NOT NULL,
+    idStatut INT(11) NOT NULL,
+    PRIMARY KEY(idFilm)
 );
 
 /* Table etablissement */
@@ -20,9 +20,10 @@ DROP TABLE etablissement;
 CREATE TABLE etablissement (
     idEtablissement INT AUTO_INCREMENT NOT NULL,
     nomEtablissement VARCHAR(50) NOT NULL,
-    adresse VARCHAR(50),
-    codePostal INT(5),
-    ville VARCHAR(50)
+    adresse VARCHAR(50) NOT NULL,
+    codePostal INT(5) NOT NULL,
+    ville VARCHAR(50) NOT NULL
+    PRIMARY KEY(idEtablissement),
 );
 
 /* Table reservation */
@@ -31,20 +32,28 @@ CREATE TABLE reservation (
     idReservation INT AUTO_INCREMENT NOT NULL,
     idUtilisateur INT NOT NULL,
     idSeance INT NOT NULL,
-    idSalle INT NOT NULL,
     numBillet VARCHAR(50) NOT NULL,
     dateReservation DATE NOT NULL,
     idTarif INT NOT NULL,
+    idPaiement INT NOT NULL,
     idStatut INT NOT NULL,
     PRIMARY KEY(idReservation)
 );
 
-/* Table roles */
-DROP TABLE role;
-CREATE TABLE role (
+/* Table role_utilisateur */
+DROP TABLE role_utilisateur;
+CREATE TABLE role_utilisateur (
     idRole INT AUTO_INCREMENT NOT NULL,
-    role VARCHAR(25) NOT NULL,
+    typeRole VARCHAR(25) NOT NULL,
     PRIMARY KEY (idRole)
+);
+
+/* Table paiement */
+DROP TABLE paiement;
+CREATE TABLE paiement (
+    idPaiement INT AUTO_INCREMENT NOT NULL,
+    typePaiement VARCHAR(25) NOT NULL,
+    PRIMARY KEY (idPaiement)
 );
 
 /* Table utilisateur */
@@ -57,18 +66,6 @@ CREATE TABLE utilisateur (
     prenomUtilisateur VARCHAR(50) NOT NULL,
     idRole INT NOT NULL,
     PRIMARY KEY (idUtilisateur)
-);
-
-/* Table contact */
-DROP TABLE contact;
-CREATE TABLE contact (
-    idContact INT NOT NULL AUTO_INCREMENT,
-    nomContact VARCHAR(50) NOT NULL,
-    objet VARCHAR(255) NOT NULL,
-    mail VARCHAR(100) NOT NULL,
-    demande LONGTEXT NOT NULL,
-    date DATE NOT NULL,
-    PRIMARY KEY (idContact)
 );
 
 /* Table salle */
@@ -85,8 +82,10 @@ CREATE TABLE salle (
 DROP TABLE seance;
 CREATE TABLE seance (
     idSeance INT(11) NOT NULL AUTO_INCREMENT,
+    idEtablissement INT NOT NULL,
+    idSalle INT NOT NULL,
     idFilm INT(11) NOT NULL,
-    dateSeance date NOT NULL,
+    dateSeance DATE NOT NULL,
     heureSeance time NOT NULL,
     PRIMARY KEY (idSeance)
 );
@@ -123,11 +122,19 @@ VALUES
     (8, "Intouchables", "2011-11-02", "Olivier Nakache / Éric Toledano", "01:53:00", "France", "Comédie", "Tout les oppose et il était peu probable qu'ils se rencontrent un jour, et pourtant. Philippe, un riche aristocrate devenu tétraplégique après un accident de parapente va engager Driss, un jeune homme d'origine sénégalaise tout droit sorti de prison, comme auxiliaire de vie à domicile. Pourquoi lui ? Tout simplement parce qu'il ne regarde pas Philippe avec le même regard de pitié que les autres candidats.", "4.5", "Intouchables.jpg", 2),
     (9, "American Nightmare 5 : Sans limites", "2021-08-04", "Everardo Gout", "01:44:00", "Etats-Unis", "Horreur", "Adela et son mari Juan habitent au Texas, où Juan travaille dans le ranch de la très aisée famille Tucker. Juan gagne l'estime du patriarche Caleb Tucker, ce qui déclenche la jalousie de Dylan, son fils. La matinée suivant le déchainement nocturne de violence annuelle, un groupe masqué attaque la famille Tucker, dont la femme de Dylan, et sa soeur, forçant les deux familles à s'unir et organiser une riposte alors que le pays entier sombre dans la spirale du chaos et que les États-Unis se désagrègent petit à petit autour d'eux.", "3", "AmericanNightmare5.jpg", 2);
 
-INSERT INTO statut (idStatut, type, etat) VALUES (1, "film", "Non disponible"), (2, "film", "A l'affiche"), (3, "billet", "Non utilisé"), (4, "billet", "Utilisé");
+INSERT INTO statut (idStatut, typeStatut, etat) VALUES
+    (1, "film", "Non disponible"),
+    (2, "film", "A l'affiche"),
+    (3, "billet", "Non utilisé"),
+    (4, "billet", "Utilisé");
+
+INSERT INTO paiement (idPaiement, typePaiement) VALUES
+    (1, "En ligne"),
+    (2, "Sur place");
 
 INSERT INTO utilisateur (idUtilisateur, email, motdepasse, nomUtilisateur, prenomUtilisateur, idRole) VALUES
     (1, "romleb2001@gmail.com", "$2y$13$XrRm0L9w..pDdx6rmsNqtunP0HNrnXHAB3kGeKA1Rv6BLflcKvTuW", "Leblanc", "Romain", 1);
 
-INSERT INTO role (idRole, role) VALUES (1, "utilisateur");
+INSERT INTO role_utilisateur (idRole, typeRole) VALUES (1, "utilisateur"), (2, "administrateur");
 
 INSERT INTO tarif (idTarif, typeTarif, tarif) VALUES (1, "Plein tarif", 9.20), (2, "Étudiant", 7.6), (3, "Moins de 14 ans", 5.9);
