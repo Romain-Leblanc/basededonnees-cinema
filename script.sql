@@ -80,6 +80,20 @@ CREATE TABLE cinema.utilisateur (
 );
 CREATE INDEX index_utilisateur_idrole ON cinema.utilisateur (idRole);
 
+/* Table clients */
+DROP TABLE IF EXISTS cinema.clients;
+CREATE TABLE IF NOT EXISTS cinema.clients (
+  idClient INT NOT NULL AUTO_INCREMENT,
+  prenomClient varchar(255) NOT NULL,
+  nomClient varchar(255) NOT NULL,
+  telClient varchar(255) NOT NULL,
+  emailClient varchar(255) NOT NULL,
+  adresseClient varchar(255) NOT NULL,
+  codePostalClient varchar(255) NOT NULL,
+  villeClient varchar(255) NOT NULL,
+  PRIMARY KEY (idClient)
+);
+
 /* Table salle */
 DROP TABLE IF EXISTS cinema.salle;
 CREATE TABLE cinema.salle (
