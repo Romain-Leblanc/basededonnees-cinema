@@ -1,11 +1,12 @@
 /* BDD cinema */
 DROP SCHEMA IF EXISTS cinema;
-CREATE SCHEMA cinema;
+CREATE SCHEMA cinema COLLATE utf8_general_ci ENGINE=InnoDB;
+USE cinema;
 
 /* Table film */
-DROP TABLE IF EXISTS cinema.film;
-CREATE TABLE cinema.film (
-    idFilm INT NOT NULL PRIMARY KEY AUTO_INCREMENT,
+DROP TABLE IF EXISTS cinema_film;
+CREATE TABLE cinema_film (
+    idFilm INT(11) NOT NULL PRIMARY KEY AUTO_INCREMENT,
     nomFilm VARCHAR(50) NOT NULL,
     dateSortie DATE NOT NULL,
     realisateurFilm VARCHAR(100) NOT NULL,
@@ -16,120 +17,119 @@ CREATE TABLE cinema.film (
     noteFilm DOUBLE NOT NULL,
     imageFilm VARCHAR(250) NOT NULL,
     idStatut INT(11) NOT NULL,
-    FOREIGN KEY (idStatut) REFERENCES cinema.statut (idStatut)
+    FOREIGN KEY (idStatut) REFERENCES cinema_statut (idStatut)
 );
-CREATE INDEX index_film_idstatut ON cinema.film (idStatut);
+CREATE INDEX index_film_idstatut ON cinema_film (idStatut);
 
 /* Table etablissement */
-DROP TABLE IF EXISTS cinema.etablissement;
-CREATE TABLE cinema.etablissement (
-    idEtablissement INT NOT NULL PRIMARY KEY AUTO_INCREMENT,
+DROP TABLE IF EXISTS cinema_etablissement;
+CREATE TABLE cinema_etablissement (
+    idEtablissement INT(11) NOT NULL PRIMARY KEY AUTO_INCREMENT,
     nomEtablissement VARCHAR(50) NOT NULL,
     adresse VARCHAR(50) NOT NULL,
     codePostal INT(5) NOT NULL,
     ville VARCHAR(50) NOT NULL
 );
 
-/* Table reservation */
-DROP TABLE IF EXISTS cinema.reservation;
-CREATE TABLE cinema.reservation (
-    idReservation INT NOT NULL PRIMARY KEY AUTO_INCREMENT,
-    idUtilisateur INT NOT NULL,
+/* Table client */
+DROP TABLE IF EXISTS cinema_client;
+CREATE TABLE IF NOT EXISTS cinema_client (
+  idClient INT(11) NOT NULL PRIMARY KEY AUTO_INCREMENT,
+  emailClient VARCHAR(50) NOT NULL,
+  motdepasseClient VARCHAR(250) NOT NULL,
+  nomClient VARCHAR(250) NOT NULL,
+  prenomClient VARCHAR(250) NOT NULL,
+  adresseClient VARCHAR(50) NOT NULL,
+  codePostalClient VARCHAR(5) NOT NULL,
+  villeClient VARCHAR(50) NOT NULL
+);
+
+/* Table ticket */
+DROP TABLE IF EXISTS cinema_ticket;
+CREATE TABLE cinema_ticket (
+    idTicket INT(11) NOT NULL PRIMARY KEY AUTO_INCREMENT,
+    idClient INT NOT NULL,
     idSeance INT NOT NULL,
     dateReservation DATE NOT NULL,
     idTarif INT NOT NULL,
     idPaiement INT NOT NULL,
     idStatut INT NOT NULL,
-    FOREIGN KEY (idUtilisateur) REFERENCES cinema.utilisateur (idUtilisateur),
-    FOREIGN KEY (idSeance) REFERENCES cinema.seance (idSeance),
-    FOREIGN KEY (idTarif) REFERENCES cinema.tarif (idTarif),
-    FOREIGN KEY (idPaiement) REFERENCES cinema.paiement (idPaiement),
-    FOREIGN KEY (idStatut) REFERENCES cinema.statut (idStatut)
+    FOREIGN KEY (idClient) REFERENCES cinema_client (idClient),
+    FOREIGN KEY (idSeance) REFERENCES cinema_seance (idSeance),
+    FOREIGN KEY (idTarif) REFERENCES cinema_tarif (idTarif),
+    FOREIGN KEY (idPaiement) REFERENCES cinema_paiement (idPaiement),
+    FOREIGN KEY (idStatut) REFERENCES cinema_statut (idStatut)
 );
-CREATE INDEX index_reservation_idutilisateur ON cinema.reservation (idUtilisateur);
-CREATE INDEX index_reservation_idseance ON cinema.reservation (idSeance);
-CREATE INDEX index_reservation_idtarif ON cinema.reservation (idTarif);
-CREATE INDEX index_reservation_idpaiement ON cinema.reservation (idPaiement);
-CREATE INDEX index_reservation_idstatut ON cinema.reservation (idStatut);
+CREATE INDEX index_ticket_idclient ON cinema_client (idClient);
+CREATE INDEX index_ticket_idseance ON cinema_ticket (idSeance);
+CREATE INDEX index_ticket_idtarif ON cinema_ticket (idTarif);
+CREATE INDEX index_ticket_idpaiement ON cinema_ticket (idPaiement);
+CREATE INDEX index_ticket_idstatut ON cinema_ticket (idStatut);
 
 /* Table role_utilisateur */
-DROP TABLE IF EXISTS cinema.role_utilisateur;
-CREATE TABLE cinema.role_utilisateur (
-    idRole INT NOT NULL PRIMARY KEY AUTO_INCREMENT,
+DROP TABLE IF EXISTS cinema_role_utilisateur;
+CREATE TABLE cinema_role_utilisateur (
+    idRole INT(11) NOT NULL PRIMARY KEY AUTO_INCREMENT,
     typeRole VARCHAR(25) NOT NULL
 );
 
 /* Table paiement */
-DROP TABLE IF EXISTS cinema.paiement;
-CREATE TABLE cinema.paiement (
-    idPaiement INT NOT NULL PRIMARY KEY AUTO_INCREMENT,
+DROP TABLE IF EXISTS cinema_paiement;
+CREATE TABLE cinema_paiement (
+    idPaiement INT(11) NOT NULL PRIMARY KEY AUTO_INCREMENT,
     typePaiement VARCHAR(25) NOT NULL,
     moyenPaiement VARCHAR(25) NOT NULL
 );
 
 /* Table utilisateur */
-DROP TABLE IF EXISTS cinema.utilisateur;
-CREATE TABLE cinema.utilisateur (
-    idUtilisateur INT NOT NULL PRIMARY KEY AUTO_INCREMENT,
-    email VARCHAR(50) NOT NULL,
-    motdepasse VARCHAR(255) NOT NULL,
-    nomUtilisateur VARCHAR(50) NOT NULL,
-    prenomUtilisateur VARCHAR(50) NOT NULL,
+DROP TABLE IF EXISTS cinema_utilisateur;
+CREATE TABLE cinema_utilisateur (
+    idUtilisateur INT(11) NOT NULL PRIMARY KEY AUTO_INCREMENT,
+    emailUtilisateur VARCHAR(50) NOT NULL,
+    motdepasseUtilisateur VARCHAR(250) NOT NULL,
+    nomUtilisateur VARCHAR(100) NOT NULL,
+    prenomUtilisateur VARCHAR(100) NOT NULL,
     idRole INT NOT NULL,
-    FOREIGN KEY (idRole) REFERENCES cinema.role_utilisateur (idRole)
+    FOREIGN KEY (idRole) REFERENCES cinema_role_utilisateur (idRole)
 );
-CREATE INDEX index_utilisateur_idrole ON cinema.utilisateur (idRole);
-
-/* Table clients */
-DROP TABLE IF EXISTS cinema.clients;
-CREATE TABLE IF NOT EXISTS cinema.clients (
-  idClient INT NOT NULL AUTO_INCREMENT,
-  prenomClient varchar(255) NOT NULL,
-  nomClient varchar(255) NOT NULL,
-  telClient varchar(255) NOT NULL,
-  emailClient varchar(255) NOT NULL,
-  adresseClient varchar(255) NOT NULL,
-  codePostalClient varchar(255) NOT NULL,
-  villeClient varchar(255) NOT NULL,
-  PRIMARY KEY (idClient)
-);
+CREATE INDEX index_utilisateur_idrole ON cinema_utilisateur (idRole);
 
 /* Table salle */
-DROP TABLE IF EXISTS cinema.salle;
-CREATE TABLE cinema.salle (
+DROP TABLE IF EXISTS cinema_salle;
+CREATE TABLE cinema_salle (
     idSalle INT(11) NOT NULL PRIMARY KEY AUTO_INCREMENT,
     numSalle VARCHAR(50) NOT NULL,
     nombrePlaceSalle INT(11) NOT NULL
 );
 
 /* Table seance */
-DROP TABLE IF EXISTS cinema.seance;
-CREATE TABLE cinema.seance (
+DROP TABLE IF EXISTS cinema_seance;
+CREATE TABLE cinema_seance (
     idSeance INT(11) NOT NULL PRIMARY KEY AUTO_INCREMENT,
     idEtablissement INT NOT NULL,
     idSalle INT NOT NULL,
     idFilm INT(11) NOT NULL,
     dateSeance DATE NOT NULL,
     heureSeance TIME NOT NULL,
-    FOREIGN KEY (idEtablissement) REFERENCES cinema.etablissement (idEtablissement),
-    FOREIGN KEY (idSalle) REFERENCES cinema.salle (idSalle),
-    FOREIGN KEY (idFilm) REFERENCES cinema.film (idFilm)
+    FOREIGN KEY (idEtablissement) REFERENCES cinema_etablissement (idEtablissement),
+    FOREIGN KEY (idSalle) REFERENCES cinema_salle (idSalle),
+    FOREIGN KEY (idFilm) REFERENCES cinema_film (idFilm)
 );
-CREATE INDEX index_seance_idetablissement ON cinema.seance (idEtablissement);
-CREATE INDEX index_seance_idsalle ON cinema.seance (idSalle);
-CREATE INDEX index_seance_idfilm ON cinema.seance (idFilm);
+CREATE INDEX index_seance_idetablissement ON cinema_seance (idEtablissement);
+CREATE INDEX index_seance_idsalle ON cinema_seance (idSalle);
+CREATE INDEX index_seance_idfilm ON cinema_seance (idFilm);
 
 /* Table tarif */
-DROP TABLE IF EXISTS cinema.tarif;
-CREATE TABLE cinema.tarif (
+DROP TABLE IF EXISTS cinema_tarif;
+CREATE TABLE cinema_tarif (
     idTarif INT(11) NOT NULL PRIMARY KEY AUTO_INCREMENT,
     typeTarif VARCHAR(25) NOT NULL,
     tarif DOUBLE NOT NULL
 );
 
 /* Table statut */
-DROP TABLE IF EXISTS cinema.statut;
-CREATE TABLE cinema.statut (
+DROP TABLE IF EXISTS cinema_statut;
+CREATE TABLE cinema_statut (
     idStatut INT(11) NOT NULL PRIMARY KEY AUTO_INCREMENT,
     typeStatut VARCHAR(25) NOT NULL,
     statut VARCHAR(50) NOT NULL
@@ -137,7 +137,7 @@ CREATE TABLE cinema.statut (
 
 -- Insertions des données
 
-INSERT INTO cinema.film (idFilm, nomFilm, dateSortie, realisateurFilm, dureeFilm, nationaliteFilm, genreFilm, synopsisFilm, noteFilm, imageFilm, idStatut)
+INSERT INTO cinema_film (idFilm, nomFilm, dateSortie, realisateurFilm, dureeFilm, nationaliteFilm, genreFilm, synopsisFilm, noteFilm, imageFilm, idStatut)
 VALUES
     (1, "Mourir peut attendre", "2021-04-02", "Cary Joji Fukunaga", "02:43:10", "Etats-Unis", "Action", "James Bond n'est plus en service et profite d'une vie tranquille en Jamaïque. Mais son répit est de courte durée car l'agent de la CIA Felix Leiter fait son retour pour lui demander son aide. Sa mission, qui est de secourir un scientifique kidnappé, va se révéler plus traître que prévu, et mener 007 sur la piste d'un méchant possédant une nouvelle technologie particulièrement dangereuse.", "0", "MourirPeutAttendre.jpg", 2),
     (2, "Fast & Furious 9", "2021-03-31", "Justin Lin", "03:08:00", "Etats-Unis", "Action", "Après avoir récupéré son fils des mains de Cipher, Dom vit des jours heureux avec le petit Brian et Letty. Cette paisible existence est vite bouleversée quand il doit faire face à un nouvel adversaire, Jakob, qui n'est autre que son petit frère", "0", "FF9.jpg", 2),
@@ -149,22 +149,23 @@ VALUES
     (8, "Intouchables", "2011-11-02", "Olivier Nakache / Éric Toledano", "01:53:00", "France", "Comédie", "Tout les oppose et il était peu probable qu'ils se rencontrent un jour, et pourtant. Philippe, un riche aristocrate devenu tétraplégique après un accident de parapente va engager Driss, un jeune homme d'origine sénégalaise tout droit sorti de prison, comme auxiliaire de vie à domicile. Pourquoi lui ? Tout simplement parce qu'il ne regarde pas Philippe avec le même regard de pitié que les autres candidats.", "4.5", "Intouchables.jpg", 2),
     (9, "American Nightmare 5 : Sans limites", "2021-08-04", "Everardo Gout", "01:44:00", "Etats-Unis", "Horreur", "Adela et son mari Juan habitent au Texas, où Juan travaille dans le ranch de la très aisée famille Tucker. Juan gagne l'estime du patriarche Caleb Tucker, ce qui déclenche la jalousie de Dylan, son fils. La matinée suivant le déchainement nocturne de violence annuelle, un groupe masqué attaque la famille Tucker, dont la femme de Dylan, et sa soeur, forçant les deux familles à s'unir et organiser une riposte alors que le pays entier sombre dans la spirale du chaos et que les États-Unis se désagrègent petit à petit autour d'eux.", "3", "AmericanNightmare5.jpg", 2);
 
-INSERT INTO cinema.statut (idStatut, typeStatut, statut) VALUES
+INSERT INTO cinema_statut (idStatut, typeStatut, statut) VALUES
     (1, "film", "Non disponible"),
     (2, "film", "A l'affiche"),
-    (3, "billet", "Non utilisé"),
-    (4, "billet", "Utilisé");
+    (3, "ticket", "Non utilisé"),
+    (4, "ticket", "Utilisé");
 
-INSERT INTO cinema.paiement (idPaiement, typePaiement, moyenPaiement) VALUES
+INSERT INTO cinema_paiement (idPaiement, typePaiement, moyenPaiement) VALUES
     (1, "En ligne", "Carte bancaire"),
     (2, "Sur place", "Espèce");
 
-INSERT INTO cinema.utilisateur (idUtilisateur, email, motdepasse, nomUtilisateur, prenomUtilisateur, idRole) VALUES
-    (1, "romleb2001@gmail.com", "$2y$13$XrRm0L9w..pDdx6rmsNqtunP0HNrnXHAB3kGeKA1Rv6BLflcKvTuW", "Leblanc", "Romain", 1);
+INSERT INTO cinema_utilisateur (idUtilisateur, emailUtilisateur, motdepasseUtilisateur, nomUtilisateur, prenomUtilisateur, idRole) VALUES
+    (1, "utilisateur@cinema_com", "c66c66bbdcc5936fbe9cddfe72979a1dd7defd381aab56a3d47e51d12746b8c0", "DUPONT", "Thomas", 1), /* Mdp : MotDePasseDupontThomas */
+    (2, "administrateur@cinema_com", "33f28858f8318895dea6695575edcc8ef8ac4574933000a618cadd69d0662394", "Admin", "Admin", 2); /* Mdp : MotDePasseAdmin123! */
 
-INSERT INTO cinema.role_utilisateur (idRole, typeRole) VALUES (1, "utilisateur"), (2, "administrateur");
+INSERT INTO cinema_role_utilisateur (idRole, typeRole) VALUES (1, "utilisateur"), (2, "administrateur");
 
-INSERT INTO cinema.tarif (idTarif, typeTarif, tarif) VALUES
+INSERT INTO cinema_tarif (idTarif, typeTarif, tarif) VALUES
     (1, "Plein tarif", 9.20),
     (2, "Étudiant", 7.6),
     (3, "Moins de 14 ans", 5.9);
