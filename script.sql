@@ -12,23 +12,42 @@ CREATE TABLE film (
     realisateurFilm VARCHAR(100) NOT NULL,
     dureeFilm TIME NOT NULL,
     nationaliteFilm VARCHAR(25) NOT NULL,
-    genreFilm VARCHAR(25) NOT NULL,
+    idGenre INT(11) NOT NULL,
     synopsisFilm LONGTEXT NOT NULL,
     noteFilm DOUBLE NOT NULL,
-    imageFilm VARCHAR(250) NOT NULL,
+    idLien INT(11) NOT NULL,
     idStatut INT(11) NOT NULL,
+    FOREIGN KEY (idGenre) REFERENCES genre (idGenre),
+    FOREIGN KEY (idLien) REFERENCES lien (idLien),
     FOREIGN KEY (idStatut) REFERENCES statut (idStatut)
 ) ENGINE=InnoDB;
-CREATE INDEX index_film_idstatut ON film (idStatut);
+CREATE INDEX idx_film_idgenre ON genre (idGenre);
+CREATE INDEX idx_film_idlien ON lien (idLien);
+CREATE INDEX idx_film_idstatut ON film (idStatut);
+
+/* Table genre */
+DROP TABLE IF EXISTS genre;
+CREATE TABLE genre (
+    idGenre INT(11) NOT NULL PRIMARY KEY AUTO_INCREMENT,
+    nomGenre VARCHAR(100) NOT NULL
+) ENGINE=InnoDB;
+
+/* Table lien */
+DROP TABLE IF EXISTS lien;
+CREATE TABLE lien (
+    idLien INT(11) NOT NULL PRIMARY KEY AUTO_INCREMENT,
+    nomImage VARCHAR(255) NOT NULL,
+    lienBandeAnnonce TEXT(1000) NOT NULL
+) ENGINE=InnoDB;
 
 /* Table etablissement */
 DROP TABLE IF EXISTS etablissement;
 CREATE TABLE etablissement (
     idEtablissement INT(11) NOT NULL PRIMARY KEY AUTO_INCREMENT,
-    nomEtablissement VARCHAR(50) NOT NULL,
-    adresse VARCHAR(50) NOT NULL,
-    codePostal INT(5) NOT NULL,
-    ville VARCHAR(50) NOT NULL
+    nomEtablissement VARCHAR(100) NOT NULL,
+    adresseEtablissement VARCHAR(100) NOT NULL,
+    codePostalEtablissement INT(5) NOT NULL,
+    villeEtablissement VARCHAR(100) NOT NULL
 ) ENGINE=InnoDB;
 
 /* Table client */
@@ -36,12 +55,12 @@ DROP TABLE IF EXISTS client;
 CREATE TABLE IF NOT EXISTS client (
   idClient INT(11) NOT NULL PRIMARY KEY AUTO_INCREMENT,
   emailClient VARCHAR(50) NOT NULL,
-  motdepasseClient VARCHAR(250) NOT NULL,
-  nomClient VARCHAR(250) NOT NULL,
-  prenomClient VARCHAR(250) NOT NULL,
-  adresseClient VARCHAR(50) NOT NULL,
-  codePostalClient VARCHAR(5) NOT NULL,
-  villeClient VARCHAR(50) NOT NULL
+  motdepasseClient VARCHAR(255) NOT NULL,
+  nomClient VARCHAR(100) NOT NULL,
+  prenomClient VARCHAR(100) NOT NULL,
+  adresseClient VARCHAR(100) NOT NULL,
+  codePostalClient INT(5) NOT NULL,
+  villeClient VARCHAR(100) NOT NULL
 );
 
 /* Table ticket */
@@ -60,11 +79,11 @@ CREATE TABLE ticket (
     FOREIGN KEY (idPaiement) REFERENCES paiement (idPaiement),
     FOREIGN KEY (idStatut) REFERENCES statut (idStatut)
 ) ENGINE=InnoDB;
-CREATE INDEX index_ticket_idclient ON client (idClient);
-CREATE INDEX index_ticket_idseance ON ticket (idSeance);
-CREATE INDEX index_ticket_idtarif ON ticket (idTarif);
-CREATE INDEX index_ticket_idpaiement ON ticket (idPaiement);
-CREATE INDEX index_ticket_idstatut ON ticket (idStatut);
+CREATE INDEX idx_ticket_idclient ON client (idClient);
+CREATE INDEX idx_ticket_idseance ON ticket (idSeance);
+CREATE INDEX idx_ticket_idtarif ON ticket (idTarif);
+CREATE INDEX idx_ticket_idpaiement ON ticket (idPaiement);
+CREATE INDEX idx_ticket_idstatut ON ticket (idStatut);
 
 /* Table role_utilisateur */
 DROP TABLE IF EXISTS role_utilisateur;
@@ -77,8 +96,8 @@ CREATE TABLE role_utilisateur (
 DROP TABLE IF EXISTS paiement;
 CREATE TABLE paiement (
     idPaiement INT(11) NOT NULL PRIMARY KEY AUTO_INCREMENT,
-    typePaiement VARCHAR(25) NOT NULL,
-    moyenPaiement VARCHAR(25) NOT NULL
+    typePaiement VARCHAR(50) NOT NULL,
+    moyenPaiement VARCHAR(50) NOT NULL
 );
 
 /* Table utilisateur */
@@ -86,13 +105,13 @@ DROP TABLE IF EXISTS utilisateur;
 CREATE TABLE utilisateur (
     idUtilisateur INT(11) NOT NULL PRIMARY KEY AUTO_INCREMENT,
     emailUtilisateur VARCHAR(50) NOT NULL,
-    motdepasseUtilisateur VARCHAR(250) NOT NULL,
+    motdepasseUtilisateur VARCHAR(255) NOT NULL,
     nomUtilisateur VARCHAR(100) NOT NULL,
     prenomUtilisateur VARCHAR(100) NOT NULL,
     idRole INT NOT NULL,
     FOREIGN KEY (idRole) REFERENCES role_utilisateur (idRole)
 ) ENGINE=InnoDB;
-CREATE INDEX index_utilisateur_idrole ON utilisateur (idRole);
+CREATE INDEX idx_utilisateur_idrole ON utilisateur (idRole);
 
 /* Table salle */
 DROP TABLE IF EXISTS salle;
@@ -115,15 +134,15 @@ CREATE TABLE seance (
     FOREIGN KEY (idSalle) REFERENCES salle (idSalle),
     FOREIGN KEY (idFilm) REFERENCES film (idFilm)
 ) ENGINE=InnoDB;
-CREATE INDEX index_seance_idetablissement ON seance (idEtablissement);
-CREATE INDEX index_seance_idsalle ON seance (idSalle);
-CREATE INDEX index_seance_idfilm ON seance (idFilm);
+CREATE INDEX idx_seance_idetablissement ON seance (idEtablissement);
+CREATE INDEX idx_seance_idsalle ON seance (idSalle);
+CREATE INDEX idx_seance_idfilm ON seance (idFilm);
 
 /* Table tarif */
 DROP TABLE IF EXISTS tarif;
 CREATE TABLE tarif (
     idTarif INT(11) NOT NULL PRIMARY KEY AUTO_INCREMENT,
-    typeTarif VARCHAR(25) NOT NULL,
+    typeTarif VARCHAR(50) NOT NULL,
     tarif DOUBLE NOT NULL
 ) ENGINE=InnoDB;
 
@@ -131,7 +150,7 @@ CREATE TABLE tarif (
 DROP TABLE IF EXISTS statut;
 CREATE TABLE statut (
     idStatut INT(11) NOT NULL PRIMARY KEY AUTO_INCREMENT,
-    typeStatut VARCHAR(25) NOT NULL,
+    typeStatut VARCHAR(50) NOT NULL,
     statut VARCHAR(50) NOT NULL
 );
 
