@@ -6,7 +6,14 @@ USE cinema;
 /* Prise en compte des accents dans les requêtes d'insertions de données */
 SET NAMES utf8;
 
-/* Table role_utilisateur */
+/* Création de 2 utilisateurs pour la base de données 'cinema' */
+CREATE USER 'admin'@'localhost' IDENTIFIED BY 'MotDePasseAdmin';
+GRANT ALL PRIVILEGES ON cinema.* TO 'admin'@'localhost';
+CREATE USER 'utilisateur'@'localhost' IDENTIFIED BY 'MotDePasseUtilisateur';
+GRANT SELECT ON cinema.* TO 'utilisateur'@'localhost';
+FLUSH PRIVILEGES;
+
+/* Table role_utilisateur + insertions */
 DROP TABLE IF EXISTS role_utilisateur;
 CREATE TABLE role_utilisateur (
     idRole INT(11) NOT NULL PRIMARY KEY AUTO_INCREMENT,
@@ -16,7 +23,7 @@ CREATE INDEX idx_role_utilisateur ON role_utilisateur (typeRole);
 
 INSERT INTO role_utilisateur (idRole, typeRole) VALUES (1, "Utilisateur"), (2, "Administrateur");
 
-/* Table utilisateur */
+/* Table utilisateur + insertions */
 DROP TABLE IF EXISTS utilisateur;
 CREATE TABLE utilisateur (
     idUtilisateur INT(11) NOT NULL PRIMARY KEY AUTO_INCREMENT,
